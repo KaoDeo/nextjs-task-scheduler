@@ -5,12 +5,13 @@ import { enqueue } from "../../core/scheduler";
 import AddTaskForm from "./AddTaskForm";
 import TaskRow from "./TaskRow";
 import { Task } from "./types";
+import { addTask } from "./services";
 
 export default function TaskTable() {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [showAddForm, setShowAddForm] = useState(false);
 
-  const handleAddTask = (newTask: Omit<Task, "id" | "createdAt">) => {
+  const handleAddTask = async (newTask: Omit<Task, "id" | "createdAt">) => {
     const task: Task = {
       ...newTask,
       id: Date.now().toString(),
@@ -18,7 +19,7 @@ export default function TaskTable() {
     };
 
     try {
-      enqueue(task);
+      await addTask(task);
       setTasks((prev) => [...prev, task]);
       setShowAddForm(false);
     } catch (error) {
