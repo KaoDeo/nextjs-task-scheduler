@@ -1,4 +1,4 @@
-import TaskTable from "./components/TaskTable";
+import TaskTable from "./components/tasks/TaskTable";
 
 export default function Home() {
   return (

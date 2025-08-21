@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Task, TaskStatus } from "../core/types";
+import { Task, TaskStatus } from "./types";
 
 interface AddTaskFormProps {
   onSubmit: (task: Omit<Task, "id" | "createdAt">) => void;
@@ -12,8 +12,7 @@ export default function AddTaskForm({ onSubmit, onCancel }: AddTaskFormProps) {
   const [formData, setFormData] = useState({
     name: "",
     description: "",
-    status: "pending" as TaskStatus,
-    executionTime: 1000,
+    status: TaskStatus.Pending,
     scheduledAt: "",
   });
 
@@ -27,10 +26,9 @@ export default function AddTaskForm({ onSubmit, onCancel }: AddTaskFormProps) {
     const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
-      [name]: name === "executionTime" ? Number(value) : value,
+      [name]: value,
     }));
 
-    // Clear error when user starts typing
     if (errors[name]) {
       setErrors((prev) => ({ ...prev, [name]: "" }));
     }
@@ -45,10 +43,6 @@ export default function AddTaskForm({ onSubmit, onCancel }: AddTaskFormProps) {
 
     if (!formData.description.trim()) {
       newErrors.description = "Description is required";
-    }
-
-    if (formData.executionTime <= 0) {
-      newErrors.executionTime = "Execution time must be greater than 0";
     }
 
     if (!formData.scheduledAt) {
@@ -73,7 +67,6 @@ export default function AddTaskForm({ onSubmit, onCancel }: AddTaskFormProps) {
     }
   };
 
-  // Set default scheduled time to 5 minutes from now
   const getDefaultScheduledTime = () => {
     const now = new Date();
     now.setMinutes(now.getMinutes() + 5);
@@ -162,24 +155,6 @@ export default function AddTaskForm({ onSubmit, onCancel }: AddTaskFormProps) {
               >
                 Execution Time (ms) *
               </label>
-              <input
-                type="number"
-                id="executionTime"
-                name="executionTime"
-                value={formData.executionTime}
-                onChange={handleChange}
-                min="1"
-                step="100"
-                className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ${
-                  errors.executionTime ? "border-red-500" : "border-gray-300"
-                }`}
-                placeholder="1000"
-              />
-              {errors.executionTime && (
-                <p className="text-red-500 text-sm mt-1">
-                  {errors.executionTime}
-                </p>
-              )}
               <p className="text-xs text-gray-500 mt-1">
                 Estimated time this task will take to complete
               </p>

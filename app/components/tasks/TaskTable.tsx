@@ -1,50 +1,14 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { Task } from "../core/types";
-import { enqueue, run, pause, resume, cancel } from "../core/scheduler";
-import TaskRow from "./TaskRow";
+import { useState } from "react";
+import { enqueue } from "../../core/scheduler";
 import AddTaskForm from "./AddTaskForm";
+import TaskRow from "./TaskRow";
+import { Task } from "./types";
 
 export default function TaskTable() {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [showAddForm, setShowAddForm] = useState(false);
-
-  // Mock tasks for demo - in real app this would come from API/database
-  useEffect(() => {
-    const mockTasks: Task[] = [
-      {
-        id: "1",
-        name: "Process Data Export",
-        description: "Export user data to CSV format",
-        status: "pending",
-        executionTime: 5000,
-        createdAt: new Date().toISOString(),
-        scheduledAt: new Date(Date.now() + 10000).toISOString(), // 10s from now
-      },
-      {
-        id: "2",
-        name: "Send Email Campaign",
-        description: "Send weekly newsletter to subscribers",
-        status: "running",
-        executionTime: 2000,
-        createdAt: new Date().toISOString(),
-        scheduledAt: new Date(Date.now() + 5000).toISOString(), // 5s from now
-        startedAt: new Date().toISOString(),
-      },
-      {
-        id: "3",
-        name: "Generate Report",
-        description: "Generate monthly analytics report",
-        status: "paused",
-        executionTime: 8000,
-        createdAt: new Date().toISOString(),
-        scheduledAt: new Date(Date.now() + 20000).toISOString(), // 20s from now
-        pausedAt: new Date().toISOString(),
-      },
-    ];
-    setTasks(mockTasks);
-  }, []);
 
   const handleAddTask = (newTask: Omit<Task, "id" | "createdAt">) => {
     const task: Task = {
@@ -62,43 +26,8 @@ export default function TaskTable() {
     }
   };
 
-  const handleAction = async (
-    taskId: string,
-    action: "run" | "pause" | "resume" | "cancel"
-  ) => {
-    try {
-      switch (action) {
-        case "run":
-          run(taskId);
-          break;
-        case "pause":
-          pause(taskId);
-          break;
-        case "resume":
-          resume(taskId);
-          break;
-        case "cancel":
-          cancel(taskId);
-          break;
-      }
-
-      // Update task status locally (in real app, this would come from API)
-      setTasks((prev) =>
-        prev.map((task) =>
-          task.id === taskId
-            ? {
-                ...task,
-                status:
-                  action === "run" ? "running" : (action as Task["status"]),
-                updatedAt: new Date().toISOString(),
-                [`${action}edAt`]: new Date().toISOString(),
-              }
-            : task
-        )
-      );
-    } catch (error) {
-      console.error(`Failed to ${action} task:`, error);
-    }
+  const handleAction = () => {
+    // TODO: Implement action handling
   };
 
   return (
@@ -143,13 +72,7 @@ export default function TaskTable() {
                   Status
                 </th>
                 <th className="text-left py-4 px-6 font-semibold text-gray-900">
-                  Execution Time
-                </th>
-                <th className="text-left py-4 px-6 font-semibold text-gray-900">
                   Scheduled At
-                </th>
-                <th className="text-left py-4 px-6 font-semibold text-gray-900">
-                  Priority
                 </th>
                 <th className="text-left py-4 px-6 font-semibold text-gray-900">
                   Actions
